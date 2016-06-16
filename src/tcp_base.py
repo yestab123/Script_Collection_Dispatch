@@ -9,6 +9,8 @@ class tcp_base(object):
         self.socket = None
         self.addr = None
         self.port = 0
+        self.desc = ""
+        self.name = ""
 
         # Handle Signal Action
     def tcp_signal_handle(self, signo):
