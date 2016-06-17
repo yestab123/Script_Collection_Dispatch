@@ -1,12 +1,18 @@
 #!/usr/bin/python
 import logging
 from module.module_print_test.main import *
+from module.module_threading_test.main import *
 tcp_module = []
-time_module = [module_print_test]
+time_module = [module_print_test, module_threading_test]
 time_module_t = [
     {
         "name":"Module_Print_Test",
         "module":module_print_test
+    },
+
+    {
+        "name":"Module_Threading_Test",
+        "module":module_threading_test
     }
 ]
 

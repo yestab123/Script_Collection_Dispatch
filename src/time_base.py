@@ -27,7 +27,7 @@ class time_base(object):
     # Must Rewrite
     # Time Event Handle Function.(Main Action Run in here)
     def time_handle(self, now_time):
-        if self.time_judge():
+        if self.time_judge(now_time):
             self.lasttime = now_time
             # Running Event
             return 0
