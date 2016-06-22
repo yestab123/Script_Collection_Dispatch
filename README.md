@@ -12,7 +12,7 @@ Usage:
 3. run 'python ScriptHubMain.py stop' to stop process
 4. run 'python ScriptHubMain.py status' to check the process status
 5. run 'python ScriptHubMain.py signal [signo]' to send signal_number to all event.
-6. run 'python ScriptHubMain.py signal [module_name] [signo]' to send signal_number to event which name is [module_name]
+6. run 'python ScriptHubMain.py signal [signo] [module_name]' to send signal_number to event which name is [module_name]
 
 @1:
 -----
