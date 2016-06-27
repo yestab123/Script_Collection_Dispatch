@@ -13,13 +13,14 @@ class epoll_base(object):
     def __init__(self):
         self.listen_list = {}
         self.epoll_fd = select.epoll()
+        self.conn = []
 
     def event_count(self):
         return len(self.listen_list)
 
     # conn is from class 'tcp_base'
     def epoll_add(self, conn):
-        pass
+        self.epoll_regist_tcp_base(conn["class"], conn["class"].event)
 
     def epoll_regist_tcp_base(self, conn, event):
         self.epoll_fd.register(conn.fd, event)
@@ -28,21 +29,38 @@ class epoll_base(object):
     def epoll_unregist_tcp_base(self, conn):
         self.epoll_fd.unregister(conn.fd)
         if conn.fd in self.listen_list:
-            del listen_list[conn.fd]
+            del self.listen_list[conn.fd]
 
     def epoll_list(self):
-        return self.epoll_fd.poll()
+        return self.epoll_fd.poll(timeout=0.01)
 
     def epoll_loop(self):
-        elist = self.epoll_list()
+        try:
+            elist = self.epoll_list()
+        except Exception, e:
+            logging.error("running epoll error %s" % str(e))
+            return -1
         for fd, events in elist:
-            conn = listen_list[fd]
-            if select.EPOLLIN & events:
-                conn.tcp_read()
-            elif select.EPOLLHUP & events:
-                conn.tcp_close()
-            elif select.EPOLLOUT & events:
-                conn.tcp_write()
+            try:
+                conn = self.listen_list[fd]
+                if select.EPOLLIN & events:
+                    if conn.flag == 1:
+                        new_conn, new_event = conn.epollin_handle()
+                        if new_conn != None:
+                            self.epoll_regist_tcp_base(new_conn, new_event)
+                    else:
+                        i = conn.epollin_handle()
+                        if i == -1:
+                            self.epoll_unregist_tcp_base(conn)
+                elif select.EPOLLHUP & events or select.EPOLLERR & events:
+                    conn.epollerr_handle()
+                    self.epoll_unregist_tcp_base(conn)
+                elif select.EPOLLOUT & events:
+                    i = conn.epollout_handle()
+                    if i == -1:
+                        self.epoll_unregist_tcp_base(conn)
+            except Exception, e:
+                logging.error("handle epoll event error %s" % str(e))
 
 # Time Base Class.All time event will insert to this class.
 # Time Event mean the event which will run in some time.
@@ -105,3 +123,20 @@ class time_run_base(object):
                     logging.error("add signum to event queue (sig:%d mod:%s) error %s" % (signum, module_name, str(e)))
                     return -1
         return -1
+
+    def process_exit(self):
+        while True:
+            count = 0
+            for i in self.time_list:
+                try:
+                    if (i["class"].process != None and i["class"].process.is_alive() == True):
+                        count += 1
+                except Exception, e:
+                    logging.error("clean environment error %s" % str(e))
+                    continue
+            if count == 0:
+                logging.info("time_event clean environment success")
+                return 0
+            time.sleep(1)
+
+
