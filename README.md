@@ -19,6 +19,7 @@ Usage:
 Develop:
 ------
 1.Use time_base.py or tcp_base.py as module to develop new script.
+
 2.Edit regist.py to regist your monitor script into master program.
 
 @1:
