@@ -1,9 +1,11 @@
 # Script_Collection_Dispatch
-Running all statistics and monitor script in one program with python. 通过模块化的方式统一调度统计和监控脚本。
+Running scripts as module for master program. Developers can ignore some common operating logic, focusing on the development of the monitoring or statistics script process logic, by registering on the master program, the master program is responsible for time and TCP monitoring. As the mean time, it just need to manage one program instead of lot of programs.
 
 Language:Python
 
 Copyright 2016 Ziv Chow.
+
+Version:0.1.0
 
 Usage:
 ------
@@ -13,6 +15,11 @@ Usage:
 4. run 'python ScriptHubMain.py status' to check the process status
 5. run 'python ScriptHubMain.py signal [signo]' to send signal_number to all event.
 6. run 'python ScriptHubMain.py signal [signo] [module_name]' to send signal_number to event which name is [module_name]
+
+Develop:
+------
+1.Use time_base.py or tcp_base.py as module to develop new script.
+2.Edit regist.py to regist your monitor script into master program.
 
 @1:
 -----
